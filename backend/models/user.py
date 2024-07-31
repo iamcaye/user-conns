@@ -17,7 +17,9 @@ class UserCreateLocation(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    location: UserCreateLocation
+    state: str
+    city: str
+    country: str
 
 
 class UserUpdate(UserBase):
