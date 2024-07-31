@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from backend.config.database import get_db
 from backend.models.user import UserCreate
 from backend.services.user_service import UserService
+from backend.entities.users import User
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -21,11 +22,13 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = UserService.find_user_by_username(db, user.username)
+    db_user = UserService.get_user_by_username(db, user.username)
     if db_user:
         return {"error": "Username already exists"}
 
-    return UserService.create_user(db, user)
+    new_user = User(user)
+
+    return UserService.create_user(db, new_user)
 
 
 @router.put("/{user_id}")

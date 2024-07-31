@@ -38,19 +38,23 @@ class Database:
         session = sessionmaker(bind=engine)
         return session()
 
+    def create_database(self):
+        engine = self.get_engine()
+        Base.metadata.create_all(engine)
+
+    def close(self):
+        self.get_session().close()
+
     def __str__(self) -> str:
         return f"Database: {self.database}, User: {self.user}, Host: {self.host}, Port: {self.port}"
 
 
-def get_db(initialize: bool = False):
+def get_db(initialize: bool = True):
     db = None
     try:
         print("Creating database connection")
         database = Database().init_from_env()
         db = database.get_session()
-
-        if initialize:
-            Base.metadata.create_all(database.get_engine())
 
         yield db
     finally:
