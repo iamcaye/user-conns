@@ -5,8 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class Database:
-    def __init__(self, host: str ="", port: int = "", user: str = "", password: str = "", database: str = ""):
+    def __init__(self, host: str = "", port: int = "", user: str = "", password: str = "", database: str = ""):
         self.host = host
         self.port = port
         self.user = user
@@ -34,11 +35,12 @@ class Database:
 
     def get_session(self):
         engine = self.get_engine()
-        Session = sessionmaker(bind=engine)
-        return Session()
+        session = sessionmaker(bind=engine)
+        return session()
 
     def __str__(self) -> str:
         return f"Database: {self.database}, User: {self.user}, Host: {self.host}, Port: {self.port}"
+
 
 def get_db(initialize: bool = False):
     db = None
@@ -54,4 +56,3 @@ def get_db(initialize: bool = False):
     finally:
         print("Closing database connection")
         db.close()
-
