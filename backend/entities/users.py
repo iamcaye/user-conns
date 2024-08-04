@@ -2,6 +2,7 @@ from backend.config.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from backend.models.user import UserCreate
+from sqlalchemy.schema import UniqueConstraint
 
 
 class User(Base):
@@ -34,6 +35,9 @@ class UserLocations(Base):
     city = Column(String)
     state = Column(String)
     country = Column(String)
+
+    # unique index to prevent duplicate locations
+    __table_args__ = (UniqueConstraint("city", "state", "country"),)
 
     user = relationship("User", back_populates="location")
 

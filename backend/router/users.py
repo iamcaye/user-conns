@@ -7,7 +7,11 @@ from backend.models.user import UserCreate
 from backend.services.user_service import UserService
 from backend.entities.users import User
 
+from fastapi import HTTPException
+
 router = APIRouter(prefix="/api/users", tags=["users"])
+
+# exception
 
 
 @router.get("/")
@@ -24,7 +28,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = UserService.get_user_by_username(db, user.username)
     if db_user:
-        return {"error": "Username already exists"}
+        raise HTTPException(status_code=400, detail="Failed to create user")
 
     new_user = User(user)
 

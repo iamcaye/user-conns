@@ -1,11 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { Select } from "./select"
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -15,8 +17,14 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+
+  const [month, setMonth] = React.useState(new Date().getMonth());
+  const [year, setYear] = React.useState(new Date().getFullYear());
+
   return (
     <DayPicker
+      month={new Date(year, month)}
+      captionLayout="dropdown-buttons"
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
@@ -60,8 +68,68 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
+        // add select for month and year
+        Caption: () => {
+          let months = [
+            { label: "January", value: 1 },
+            { label: "February", value: 2 },
+            { label: "March", value: 3 },
+            { label: "April", value: 4 },
+            { label: "May", value: 5 },
+            { label: "June", value: 6 },
+            { label: "July", value: 7 },
+            { label: "August", value: 8 },
+            { label: "September", value: 9 },
+            { label: "October", value: 10 },
+            { label: "November", value: 11 },
+            { label: "December", value: 12 },
+          ]
+          // years from 1900 to current year
+          let years = Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).reverse()
+
+          return (
+            <div className="flex gap-4 justify-center">
+              <Select
+                onValueChange={(value) => setMonth(parseInt(value) - 1)}
+                value="props.selected.getMonth()"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Month" />
+                  <div className="flex items-center space-x-1">
+                    <span>{months[month]?.label || "Month"}</span>
+                    <ChevronDownIcon />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="z-10 bg-white border rounded-md shadow-lg w-40 p-3 h-40 overflow-y-auto mt-6">
+                  {months.map((month, index) => (
+                    <SelectItem key={index} value={month.value.toString()}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => setYear(parseInt(value))}
+                value="props.selected.getFullYear()"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Year" />
+                  <div className="flex items-center space-x-1">
+                    <span>{year || "Year"}</span>
+                    <ChevronDownIcon />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="z-10 bg-white border rounded-md shadow-lg w-40 p-3 h-40 overflow-y-auto mt-6">
+                  {years.map((year, index) => (
+                    <SelectItem key={index} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div >
+          )
+        }
       }}
       {...props}
     />

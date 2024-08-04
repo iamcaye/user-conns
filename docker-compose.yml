@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - ./db/data:/var/lib/postgresql/data
+    restart: 'unless-stopped'
 
   pgadmin:
     image: dpage/pgadmin4
@@ -21,6 +22,8 @@ services:
       - ./db/pgadmin:/var/lib/pgadmin
     depends_on:
       - user-conns-db
+
+    restart: 'unless-stopped'
 
 volumes:
   db-data:
