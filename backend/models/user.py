@@ -31,6 +31,7 @@ class UserCreate(UserBase):
     state: str
     city: str
     country: str
+    country_code: str
 
 
 class UserUpdate(UserBase):
@@ -51,3 +52,8 @@ class UserLocation(UserModel):
 
 class FullUser(UserModel):
     location: UserLocation
+
+
+class UserLogin(Base):
+    username: str
+    password: str

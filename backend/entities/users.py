@@ -23,7 +23,7 @@ class User(Base):
         self.dob = user.dob
         self.username = user.username
         self.email = user.email
-        self.location = UserLocations(city=user.city, state=user.state, country=user.country)
+        self.location = UserLocations(city=user.city, state=user.state, country=user.country, country_code=user.country_code)
 
     def __str__(self) -> str:
         return f"User: {self.name} {self.last_name}, Username: {self.username}, Email: {self.email}, Location: {self.location}"
@@ -35,16 +35,18 @@ class UserLocations(Base):
     city = Column(String)
     state = Column(String)
     country = Column(String)
+    country_code = Column(String)
 
     # unique index to prevent duplicate locations
     __table_args__ = (UniqueConstraint("city", "state", "country"),)
 
     user = relationship("User", back_populates="location")
 
-    def __init__(self, city: str, state: str, country: str) -> None:
+    def __init__(self, city: str, state: str, country: str, country_code: str) -> None:
         self.city = city
         self.state = state
         self.country = country
+        self.country_code = country_code
 
     def __str__(self) -> str:
-        return f"Location: {self.city}, {self.state}, {self.country}"
+        return f"Location: {self.city}, {self.state}, {self.country} ({self.country_code})"
