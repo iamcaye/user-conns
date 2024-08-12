@@ -18,6 +18,7 @@ class UserBase(Base):
     name: str
     last_name: str
     dob: str
+    gender: str
 
 
 class UserCreateLocation(Base):
@@ -32,6 +33,7 @@ class UserCreate(UserBase):
     city: str
     country: str
     country_code: str
+    url_picture: str = None
 
 
 class UserUpdate(UserBase):
