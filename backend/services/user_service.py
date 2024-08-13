@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-from backend.entities.users import User, UserLocations
+from sqlalchemy import and_
+from backend.entities.users import User, UserLocations, UserConnections
 from backend.models.user import FullUser, UserLogin, UserCreate
 import requests
 
@@ -30,14 +31,24 @@ class UserService:
 
     # page and page_size are optional
     @staticmethod
-    def get_suggestions(page: int = 0, page_size: int = 10, db: Session = None) -> list[User]:
-        users = db.query(User).options(joinedload(User.location), joinedload(User.pictures)).offset(page * page_size).limit(page_size).all()
+    def get_suggestions(user_id: int, page: int = 0, page_size: int = 10, db: Session = None) -> list[User]:
+        user_connections = db.query(UserConnections).filter(UserConnections.id_user == user_id).all()
+        users = db.query(User).options(
+            joinedload(User.location), joinedload(User.pictures)
+        ).where(
+            and_(
+                User.id != user_id,
+                ~User.id.in_([conn.id_connection for conn in user_connections])
+            )
+        ).offset(page * page_size).limit(page_size).all()
+
         print(f"Users: {len(users)}")
         if users is None or len(users) < page_size:
             res_user = UserService._random_users(db, page_size - len(users))
             if res_user is None or len(res_user) == 0:
                 return []
-            return UserService.get_suggestions(page, page_size, db)
+            users = UserService.get_suggestions(user_id, page, page_size, db)
+            return users
         return users
 
     @staticmethod
@@ -84,3 +95,11 @@ class UserService:
     @staticmethod
     def login(user: UserLogin, db: Session) -> FullUser:
         return db.query(User).options(joinedload(User.location)).filter(User.username == user.username).first()
+
+    @staticmethod
+    def connect_user(db: Session, user: User, connection: User) -> User:
+        user_conn = UserConnections(id_user=user.id, id_connection=connection.id)
+        user.connections.append(user_conn)
+        db.commit()
+        db.refresh(user)
+        return user

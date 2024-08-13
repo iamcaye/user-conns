@@ -1,8 +1,11 @@
 from backend.config.database import Base
 from sqlalchemy.orm import relationship
+from typing import List
+from sqlalchemy.orm import Mapped
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from backend.models.user import UserCreate
 from sqlalchemy.schema import UniqueConstraint
+from datetime import datetime
 
 
 class User(Base):
@@ -18,6 +21,7 @@ class User(Base):
     id_location = Column(Integer, ForeignKey("user_locations.id"))
     location = relationship("UserLocations", back_populates="user", uselist=False)
     pictures = relationship("UserPictures", back_populates="user")
+    connections = relationship("UserConnections", back_populates="user", foreign_keys="UserConnections.id_user")
 
     def __init__(self, user: UserCreate) -> None:
         self.name = user.name
@@ -69,3 +73,20 @@ class UserPictures(Base):
 
     def __str__(self) -> str:
         return f"Picture: {self.url}"
+
+
+class UserConnections(Base):
+    __tablename__ = "user_connections"
+    id_user = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    id_connection = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    connected_at = Column(DateTime, default=datetime.now)
+
+    user = relationship("User", foreign_keys=[id_user], back_populates="connections")
+    connection = relationship("User", foreign_keys=[id_connection])
+
+    def __init__(self, id_user: int, id_connection: int) -> None:
+        self.id_user = id_user
+        self.id_connection = id_connection
+
+    def __str__(self) -> str:
+        return f"Connection: {self.id_user} -> {self.id_connection}"

@@ -40,6 +40,7 @@ class Database:
 
     def create_database(self):
         engine = self.get_engine()
+        from backend.entities.users import User, UserLocations, UserPictures, UserConnections
         Base.metadata.create_all(engine)
 
     def close(self):

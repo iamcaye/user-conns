@@ -59,3 +59,8 @@ class FullUser(UserModel):
 class UserLogin(Base):
     username: str
     password: str
+
+
+class UserCreateConnection(Base):
+    user_id: int
+    user_id_to_connect: int

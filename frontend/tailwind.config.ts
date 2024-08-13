@@ -71,11 +71,16 @@ const config = {
           from: { opacity: "0" },
           to: { opacity: "1" }
         },
+        "connect": {
+          from: { boxShadow: "2px 2px 2px 2px rgba(0, 255, 0, 0.3)" },
+          to: {},
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-in",
+        "connect": "connect 1s ease-in-out"
       },
     },
   },

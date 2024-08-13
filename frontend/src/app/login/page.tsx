@@ -5,6 +5,7 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
 
 export default function Login() {
@@ -12,6 +13,7 @@ export default function Login() {
   let [password, setPassword] = useState("");
   let [loading, setLoading] = useState(false);
   let { toast } = useToast();
+  let { login } = useAuth();
 
   let onLogin = () => {
     setLoading(true);
@@ -21,13 +23,14 @@ export default function Login() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
-    }).then((res) => {
+    }).then(async (res) => {
       if (res.ok) {
         toast({
           title: "Logged in",
           description: "You have been logged in",
           style: { backgroundColor: "green", color: "white", opacity: 0.6 },
         });
+        login(await res.json());
         setTimeout(() => {
           setLoading(false);
           window.location.href = "/";
